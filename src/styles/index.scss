@@ -1,0 +1,111 @@
+@import './PlayRoom.scss';
+@import './ControlPanel.scss';
+
+html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Helvetica, Arial;
+    font-size: 16px;
+    color: #2f2f2f;
+  }
+  
+  header {
+    background-color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    box-shadow: 0 0 8px #b9b9b981;
+  
+    h1 {
+      text-align: center;
+      margin-top: 25px;
+    }
+  
+    .date-picker {
+      position: absolute;
+      z-index: 2;
+      top: 21px;
+      left: 60%;
+      font-size: 18px;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 13px 30px;
+      outline: none;
+    }
+  
+    .columns {
+      margin-left: 90px;
+      position: relative;
+      top: 0;
+      background-color: white;
+      height: 40px;
+      width: calc(100% - 100px);
+      padding: 0;
+      display: table;
+  
+  
+      li {
+        display: inline-block;
+        margin-bottom: 5px;
+        text-align: center;
+        vertical-align: middle;
+        display: table-cell;
+        color: #70757A;
+  
+      }
+    }
+  }
+  
+  
+  .wrapper {
+    position: relative;
+    top: 70px;
+    
+    .hours-column {
+      position: absolute;
+      top: 50px;
+      left: 0;
+      width: 100%;
+      padding: 0;
+      
+      li {
+        text-indent: 40px;
+        border-top: 1px solid #dadce0;
+        list-style: none;
+        color: #70757A;
+        padding-top: 11px;
+        margin-bottom: 30px;
+      }  
+    }
+    
+    .events-canvas {
+      position: relative;
+      top: 66px;
+      left: 80px;
+      width: calc(100% - 80px);
+      height: 1440px;
+      
+      .current-time-bar {
+        border: 1px solid #ea4335;
+        width: 100%;
+        position: absolute;
+      }
+      
+      div {
+        display: table;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        
+        p {
+          text-align: center;
+          vertical-align: middle;
+          display: table-cell;
+        }
+      }
+    }
+  }
