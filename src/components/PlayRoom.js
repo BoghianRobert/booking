@@ -4,6 +4,8 @@ import { getSeats } from '../utils/getSeats'
 import { findSeat } from '../utils/findSeat'
 import { getSeatPrice } from '../utils/getSeatPrice'
 import { getTotalPrice } from '../utils/getTotalPrice'
+import { getTicketId } from '../utils/getTicketId'
+import { buildDate } from '../utils/buildDate'
 import Axios from 'axios'
 import { url } from '../env'
 
@@ -47,8 +49,19 @@ const PlayRoom = ({play, theater, history}) => {
         }
     }
 
-    const completeOrder = () =>  {
-        console.log(customerData)
+    const completeOrder = (selectedSeats) =>  {
+        let ticketIds = getTicketId(tickets, selectedSeats, play)
+        let currentDate = buildDate()
+        ticketIds.map((ticketId) => {
+            return Axios.post(url.payment, {customerDto:customerData ,ticketId, dateTime: currentDate})
+                .then((res) => {
+                    console.log(res.data)
+                })
+                .catch((err) => {
+                    console.log(err)
+                    alert(err)
+                })
+        })
     }
 
     return (
@@ -76,8 +89,8 @@ const PlayRoom = ({play, theater, history}) => {
                         <input type="number" name='phoneNumber' placeholder='Phone Number' onChange={e=> setCustomerData({...customerData, [e.target.name]: e.target.value})} />
                         <input type="email" name='email' placeholder='Email' onChange={e=> setCustomerData({...customerData, [e.target.name]: e.target.value})} />
 
-                        <div onClick={e => completeOrder() } className='place-order'>Complete Order - ${getTotalPrice(selectedSeats)}</div>
-                        <div onClick={e => setShowOrder(false) } className='close-button'>Cancel</div>
+                        <div onClick={() => completeOrder(selectedSeats) } className='place-order'>Complete Order - ${getTotalPrice(selectedSeats)}</div>
+                        <div onClick={() => setShowOrder(false) } className='close-button'>Cancel</div>
                     </form>
                 </div> 
             }
