@@ -60,8 +60,10 @@ const PlayRoom = ({play, theater, history}) => {
         let currentDate = buildDate()
         if (customerData.phoneNumber.length !== 9){
             alert('Phone number has to have 9 digits')
+            return 0
         } else if (!customerData.email.includes('@') || !customerData.email.includes('.')){
             alert('The E-mail address does not exist')
+            return 0
         }
         else{
             try {
