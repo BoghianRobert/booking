@@ -26,6 +26,7 @@ const ControlPanel = ({history}) => {
   const [editStart, setEditStart] = useState()
   const [editEnd, setEditEnd] = useState()
   const [editDate, setEditDate] = useState()
+  const [tickets, setTickets] = useState()
 
   useEffect(() => {
     const getPlays = () => {
@@ -59,6 +60,20 @@ const ControlPanel = ({history}) => {
       })  
     }
     getTheater();
+  }, []) 
+
+  useEffect(() => {
+    const getTicket = () => {
+      Axios.get(url.ticket)
+      .then((res) => {
+          setTickets(res.data)
+      })
+      .catch((err) => {
+          console.log(err)
+          alert(err)
+      })  
+    }
+    getTicket();
   }, []) 
 
   const postNewPlay = () => {
@@ -112,10 +127,16 @@ const ControlPanel = ({history}) => {
 
   const deletePlay = (play) => {
     let id = play.id
+    for (let i in tickets) {
+      if(tickets[i].playId === id && tickets[i].customerId !== null && play.start.slice(0,10) > formatDate(startDate)){
+        alert('You cannnot delete plays with sold tickets!')
+        return 0
+      }
+    }
     Axios.delete(url.play, {id})
     .then((res) => {
         console.log(res.data)
-        alert("Play deleted succesfully")
+        alert("Play deleted successfully")
     })
     .catch((err) => {
         console.log(err)

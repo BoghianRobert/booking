@@ -69,6 +69,7 @@ const PlayRoom = ({play, theater, history}) => {
             try {
                 const resp = await Axios.post(url.payment, { customerDto: customerData, ticketIds, dateTime: currentDate });
                 console.log(resp.data);
+                alert('Order placed successfully!')
             } catch (err) {
                 alert(err)
                 console.error(err);
