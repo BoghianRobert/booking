@@ -123,6 +123,13 @@ const ControlPanel = ({history}) => {
     })
   }
 
+  const getName = (id) => {
+    for(let i in columns) {
+      if(columns[i].id === id)
+        return columns[i].name
+    }
+  }
+
   
   return (
     <div>
@@ -209,12 +216,12 @@ const ControlPanel = ({history}) => {
             return (
               <div key={key} className='play-details'>
                 <div >
-                  <label htmlFor="edit-id">Theater id:</label>
+                  <label htmlFor="edit-id">Theater :</label>
                   {isEditing === play.id ? (
                     <input
                       name='edit-id'
                       onChange={e => setEditTheaterId(e.target.value)}
-                      placeholder={play.theaterId}
+                      placeholder={getName(play.theaterId)}
                     >
                     </input>
                   ) : (
@@ -223,7 +230,7 @@ const ControlPanel = ({history}) => {
                       style={{marginLeft:'20px', marginTop:'5px'}}
                     >
                       <span>
-                        {play.theaterId}
+                        {getName(play.theaterId)}
                       </span>
                     </div>
                   )}
