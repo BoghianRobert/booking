@@ -1,0 +1,54 @@
+.big-payment-comp {
+    background-color: #70757A;
+    top: 0;
+    left: 0;
+
+    .ph-header {
+        text-align: center;
+        padding-top: 20px;
+        font-size: 20px;
+        height: 60px;
+        display: flex;
+        flex-direction: row;
+        // color: azure;
+        .div-in-header {
+            margin-left: 30%;
+            
+        }
+
+        .go-back-payment {
+            margin-left: 10%;
+            font-size: 18px;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+            width: 8%;
+            height: 50%;
+            background-color: #333333;
+            cursor: pointer;
+        }
+
+    }
+    
+    .payment-history-component {
+        width: 100%;
+        bottom: 5%;
+      
+        .payment-table {
+          border: 1px solid #595959;
+          box-shadow: 0 0 8px #b9b9b981;
+          display: flex;
+          flex-direction: row;
+          height: 9%;
+        //   color: azure;
+      
+        > div {
+            width: 20%;
+            padding-top: 0.3%;
+            padding-left: 0.6%;
+
+          }
+        }
+    }
+}

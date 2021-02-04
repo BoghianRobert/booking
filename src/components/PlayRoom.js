@@ -18,6 +18,7 @@ const PlayRoom = ({play, theater, history}) => {
     const [selectedSeats, setSelectedSeats] = useState([])
     const [showOrder, setShowOrder] = useState(false)
     const [customerData, setCustomerData] = useState({})
+    const [presentPlay, setPresentPlay] = useState({})
 
     useEffect(() => {
         const getTickets = () => {
@@ -34,9 +35,14 @@ const PlayRoom = ({play, theater, history}) => {
       }, [])
 
     useEffect(() => {
-        setSeats(getSeats(theater))
-        setTakenTickets(findSeat(play,tickets))
+        let numberOfSeats = JSON.parse(localStorage.getItem('totalSeats'));
+        let currentPlay = JSON.parse(localStorage.getItem('play'));
+        setSeats(getSeats(numberOfSeats))
+        setTakenTickets(findSeat(currentPlay,tickets))
+        setPresentPlay(currentPlay)
     }, [theater, play, tickets]) 
+
+
 
     const chooseSeat = (seat) => {
         if (takenTickets.includes(seat) === true) {
@@ -50,18 +56,27 @@ const PlayRoom = ({play, theater, history}) => {
     }
 
     const completeOrder = (selectedSeats) =>  {
-        let ticketIds = getTicketId(tickets, selectedSeats, play)
+        let ticketIds = getTicketId(tickets, selectedSeats, presentPlay)
         let currentDate = buildDate()
-        ticketIds.map((ticketId) => {
-            return Axios.post(url.payment, {customerDto:customerData ,ticketId, dateTime: currentDate})
-                .then((res) => {
-                    console.log(res.data)
-                })
-                .catch((err) => {
-                    console.log(err)
-                    alert(err)
-                })
-        })
+        if (customerData.phoneNumber.length !== 9){
+           alert('Phone number has to have 9 digits')
+        } else if (!customerData.email.includes('@') || !customerData.email.includes('.')){
+            alert('The E-mail address does not exist')
+        }
+        else{
+            ticketIds.map((ticketId) => {
+                return Axios.post(url.payment, {customerDto:customerData ,ticketId, dateTime: currentDate})
+                    .then((res) => {
+                        console.log(res.data)
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                        alert(err)
+                    })
+            })
+            history.push('/')
+        }
+        console.log(ticketIds)
     }
 
     return (
@@ -105,4 +120,4 @@ const mapStateToProps = state => {
     }
 }
   
-export default connect(mapStateToProps)(PlayRoom)
+export default connect(mapStateToProps)(PlayRoom);

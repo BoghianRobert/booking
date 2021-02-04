@@ -6,7 +6,7 @@ export const getTotalPrice = (selectedSeats) => {
             total += 24.99
         }
         else {
-            total += 19.99
+            total += 14.99
         }
     }
     return total
