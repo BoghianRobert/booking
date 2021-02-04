@@ -27,8 +27,8 @@ const PlayRoom = ({play, theater, history}) => {
               setTickets(res.data)
           })
           .catch((err) => {
-              console.log(err)
               alert(err)
+              console.log(err)
           })  
         }
         getTickets();
@@ -55,28 +55,24 @@ const PlayRoom = ({play, theater, history}) => {
         }
     }
 
-    const completeOrder = (selectedSeats) =>  {
+    const completeOrder = async (selectedSeats) =>  {
         let ticketIds = getTicketId(tickets, selectedSeats, presentPlay)
         let currentDate = buildDate()
         if (customerData.phoneNumber.length !== 9){
-           alert('Phone number has to have 9 digits')
+            alert('Phone number has to have 9 digits')
         } else if (!customerData.email.includes('@') || !customerData.email.includes('.')){
             alert('The E-mail address does not exist')
         }
         else{
-            ticketIds.map((ticketId) => {
-                return Axios.post(url.payment, {customerDto:customerData ,ticketId, dateTime: currentDate})
-                    .then((res) => {
-                        console.log(res.data)
-                    })
-                    .catch((err) => {
-                        console.log(err)
-                        alert(err)
-                    })
-            })
-            history.push('/')
+            try {
+                const resp = await Axios.post(url.payment, { customerDto: customerData, ticketIds, dateTime: currentDate });
+                console.log(resp.data);
+            } catch (err) {
+                alert(err)
+                console.error(err);
+            }
         }
-        console.log(ticketIds)
+        history.push('/')
     }
 
     return (

@@ -64,7 +64,6 @@ const ControlPanel = ({history}) => {
   const postNewPlay = () => {
     let start = buildDateNewPlay(startDate, startTime)
     let end = buildDateNewPlay(startDate, endTime)
-    console.log(theaterId, playName, start, end)
     Axios.post(url.play, {theaterId:theaterId ,name: playName, start, end})
     .then((res) => {
         console.log(res.data)
@@ -116,6 +115,7 @@ const ControlPanel = ({history}) => {
     Axios.delete(url.play, {id})
     .then((res) => {
         console.log(res.data)
+        alert("Play deleted succesfully")
     })
     .catch((err) => {
         console.log(err)
@@ -207,8 +207,8 @@ const ControlPanel = ({history}) => {
         <div className='editable'>
           {events?.map((play, key) => {
             return (
-              <div key={key} className='play-details' >
-                <div>
+              <div key={key} className='play-details'>
+                <div >
                   <label htmlFor="edit-id">Theater id:</label>
                   {isEditing === play.id ? (
                     <input

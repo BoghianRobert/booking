@@ -62,7 +62,6 @@ const Main = ({dispatch, theater, history}) => {
       if(columns[i].id === event.theaterId){
         dispatch(updateTheater(columns[i]))
         localStorage.setItem('totalSeats', JSON.stringify(columns[i]));
-        console.log(event)
         localStorage.setItem('play', JSON.stringify(event));
       }
     }
@@ -138,69 +137,64 @@ const Main = ({dispatch, theater, history}) => {
         <div className='list-view'>
           {events?.map((play, key) => {
             return (
-              <div> 
-              { play.start.substring(0,10) === formatDate(startDate) ?
-                <div key={key} className='play-details-list' >
-                    <div>
-                      <label htmlFor="theater-list-view">Theater:</label>
-                      <div
-                        name='theater-list-view'
-                        style={{marginLeft:'20px', marginTop:'5px'}}
-                      >
-                        <span>
-                          {getName(play.theaterId)}
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      
-                      <div
-                        name='name-list-view'
-                        style={{marginTop:'5px'}}
-                      >
-                        <span>
-                          {play.name}
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <label htmlFor="name-list-view">Starting hour:</label>
-                      
-                      <div
-                        style={{marginTop:'5px'}}
-                        name='edit-start'
-                      >
-                        <span>
-                          {play.start.slice(11,19)}
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <label htmlFor="end-list-view">Ending hour:</label>
-                      <div
-                        style={{marginTop:'5px'}}
-                        name='end-list-view'
-                      >
-                        <span>
-                          {play.end.slice(11,19)}
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <label htmlFor="date-list-view">Date:</label>
-                      <div
-                        style={{marginTop:'5px'}}
-                        name='date-list-view'
-                      >
-                        <span>
-                          {play.start.slice(0,10)}
-                        </span>
-                      </div>
-                    </div>
-                    <button className='choose-button' onClick={() => selectPlay(play, columns)}>Choose</button>
-                  </div> :
-                  <div style={{display:'none'}}></div>
-                }
+              <div key={key} className='play-details-list' style={ play.start.substring(0,10) === formatDate(startDate) ? {} : {display:'none'}}>
+                <div>
+                  <label htmlFor="theater-list-view">Theater:</label>
+                  <div
+                    name='theater-list-view'
+                    style={{marginLeft:'20px', marginTop:'5px'}}
+                  >
+                    <span>
+                      {getName(play.theaterId)}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  
+                  <div
+                    name='name-list-view'
+                    style={{marginTop:'5px'}}
+                  >
+                    <span>
+                      {play.name}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="name-list-view">Starting hour:</label>
+                  
+                  <div
+                    style={{marginTop:'5px'}}
+                    name='edit-start'
+                  >
+                    <span>
+                      {play.start.slice(11,19)}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="end-list-view">Ending hour:</label>
+                  <div
+                    style={{marginTop:'5px'}}
+                    name='end-list-view'
+                  >
+                    <span>
+                      {play.end.slice(11,19)}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="date-list-view">Date:</label>
+                  <div
+                    style={{marginTop:'5px'}}
+                    name='date-list-view'
+                  >
+                    <span>
+                      {play.start.slice(0,10)}
+                    </span>
+                  </div>
+                </div>
+                <button className='choose-button' onClick={() => selectPlay(play, columns)}>Choose</button>
               </div>
             )
           })}
