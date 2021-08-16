@@ -218,7 +218,7 @@ const ControlPanel = ({dispatch, history}) => {
       }
 
       { playForm && 
-        <div className="customer-form">
+        <div className="customer-form-create">
           <form className='form-container'>
             <div className='theater-picker'>
               <label htmlFor="theater">Theater:</label>
