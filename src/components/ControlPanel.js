@@ -148,12 +148,12 @@ const ControlPanel = ({dispatch, history}) => {
 
   const deletePlay = (play) => {
     let id = play.id
-    for (let i in tickets) {
-      if(tickets[i].playId === id && tickets[i].customerId !== null && play.start.slice(0,10) > formatDate(startDate)){
-        alert('You cannnot delete plays with sold tickets!')
-        return 0
-      }
-    }
+    // for (let i in tickets) {
+    //   if(tickets[i].playId === id && tickets[i].customerId !== null && play.start.slice(0,10) > formatDate(startDate)){
+    //     alert('You cannnot delete plays with sold tickets!')
+    //     return 0
+    //   }
+    // }
     Axios.delete(url.play, {id})
     .then((res) => {
         console.log(res.data)
