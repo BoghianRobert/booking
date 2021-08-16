@@ -7,11 +7,15 @@ import { HoursColumn } from './HoursColumn.js';
 import Axios from 'axios';
 import { url } from '../env'
 
+import { updatePlay } from '../actions/playActions'
+import { updateTheater } from '../actions/theaterActions'
+
+import { connect } from 'react-redux'
 
 import "react-datepicker/dist/react-datepicker.css";
 
 
-const ControlPanel = ({history}) => {
+const ControlPanel = ({dispatch, history}) => {
   const [events, setEvents] = useState()
   const [columns, setColumns] = useState([])
   const [startDate, setStartDate] = useState(new Date());
@@ -27,6 +31,9 @@ const ControlPanel = ({history}) => {
   const [editEnd, setEditEnd] = useState()
   const [editDate, setEditDate] = useState()
   const [tickets, setTickets] = useState()
+  const [theaterForm, setTheaterForm] = useState(false)
+  const [newTheater, setNewTheater] = useState({})
+  const [playForm, setPlayForm] = useState(false)
 
   useEffect(() => {
     const getPlays = () => {
@@ -87,6 +94,20 @@ const ControlPanel = ({history}) => {
         console.log(err)
         alert(err)
     })
+  }
+
+  const selectPlay = (event, columns) => {
+    if(isEditing !== event.id) {
+      for(let i in columns){
+        if(columns[i].id === event.theaterId){
+          dispatch(updateTheater(columns[i]))
+          localStorage.setItem('totalSeats', JSON.stringify(columns[i]));
+          localStorage.setItem('play', JSON.stringify(event));
+        }
+      }
+      dispatch(updatePlay(event))
+      history.push('/play')
+    }
   }
 
   const startEditing = (play) => {
@@ -151,21 +172,63 @@ const ControlPanel = ({history}) => {
     }
   }
 
+  const addTheater = () => {
+    Axios.post(url.theater, { name: newTheater.name, numberOfSeats: newTheater.numberOfSeats, address: newTheater.address });
+    setTheaterForm(false)
+  }
+
+  const logOut = () => {
+    localStorage.removeItem('admin')
+    history.push('/')
+  }
+
   
   return (
     <div>
       <div className='header-cont'>
         <div className='control-panel'>Control Panel</div>
-        <div className='create-play-form'>
-            <div>
-                <label htmlFor="theater">Theater:</label>
-                <select name="theater" id="theater" onChange={e => setTheaterId(e.target.value)}>
-                    {columns?.map((theater, index) => <option key={index} value={theater.id}>{theater.name}</option>)}
-                </select>
+        {hideCalendar ?
+            <button className='show-calendar' onClick={() => setHideCalendar(!hideCalendar)}>Show Calendar</button>:
+            <button className='show-calendar' onClick={() => setHideCalendar(!hideCalendar)}>Edit Plays</button>
+        }
+        {hideCalendar ? 
+            <div style={{display: 'none'}}></div> :
+            <ul className='columns'>
+            {columns?.map((column, index) => <li key={index} style={{ width: `${100/columns.length}%`}} >{column.name}</li>)}
+            </ul> 
+        }
+        <button className='payment-history' onClick={() => history.push('/payment-history')}>Payment History</button>
+        <button className='log-out' onClick={() => logOut()}>Log out</button>
+        <button className='add-theater' onClick={() => setTheaterForm(true)}>Add Theater</button>
+        <button className='add-play' onClick={() => setPlayForm(true)}>Add Play</button>
+      </div>
+
+      { theaterForm && 
+        <div className="customer-form">
+            <form className='form-container'>
+                <input type="text" name='name' placeholder='Name Of The Theater'  onChange={e=> setNewTheater({...newTheater, [e.target.name]: e.target.value})}/>
+                <input type="number" name='numberOfSeats' placeholder='Number Of Seats' onChange={e=> setNewTheater({...newTheater, [e.target.name]: e.target.value})}/>
+                <input type="text" name='address' placeholder='Address' onChange={e=> setNewTheater({...newTheater, [e.target.name]: e.target.value})}/>
+
+
+                <div onClick={() => addTheater() } className='place-order'>Add Theater</div>
+                <div onClick={() => setTheaterForm(false) } className='close-button'>Cancel</div>
+            </form>
+        </div> 
+      }
+
+      { playForm && 
+        <div className="customer-form">
+          <form className='form-container'>
+            <div className='theater-picker'>
+              <label htmlFor="theater">Theater:</label>
+              <select name="theater" id="theater" onChange={e => setTheaterId(e.target.value)}>
+                  {columns?.map((theater, index) => <option key={index} value={theater.id}>{theater.name}</option>)}
+              </select>
             </div>
             <div>
                 <label htmlFor="name">Name:</label>
-                <input type="text" name='name' placeholder='name' onChange={e => setPlayName(e.target.value)}/>
+                <input type="text" name='name' placeholder='Play Title' onChange={e => setPlayName(e.target.value)}/>
             </div>
             <div>
                 <label htmlFor="start">Start:</label>
@@ -179,22 +242,14 @@ const ControlPanel = ({history}) => {
                 <label htmlFor="date">Enter date:</label>
                 <DatePicker name='date' dateFormat="yyyy/MM/dd" selected={startDate} onChange={date => setStartDate(date)} /> 
             </div>
-            <button className='create-play' onClick={() => postNewPlay()}>Create Play</button>
-        </div>
 
-        {hideCalendar ?
-            <button className='show-calendar' onClick={() => setHideCalendar(!hideCalendar)}>Show Calendar</button>:
-            <button className='show-calendar' onClick={() => setHideCalendar(!hideCalendar)}>Edit Plays</button>
-        }
-        {hideCalendar ? 
-            <div style={{display: 'none'}}></div> :
-            <ul className='columns'>
-            {columns?.map((column, index) => <li key={index} style={{ width: `${100/columns.length}%`}} >{column.name}</li>)}
-            </ul> 
-        }
-        <button className='payment-history' onClick={() => history.push('/payment-history')}>Payment History</button>
+            <div className='place-order' onClick={() => postNewPlay()}>Create Play</div>
+            <div onClick={() => setPlayForm(false) } className='close-button'>Cancel</div>
 
-      </div>
+          </form>
+        </div> 
+      }
+
       {!hideCalendar &&
 
         <div className="wr">
@@ -232,124 +287,131 @@ const ControlPanel = ({history}) => {
         </div>
       }
       { hideCalendar && 
-        <div className='editable'>
-          {events?.map((play, key) => {
-            return (
-              <div key={key} className='play-details'>
-                <div >
-                  <label htmlFor="edit-id">Theater :</label>
-                  {isEditing === play.id ? (
-                    <input
-                      name='edit-id'
-                      onChange={e => setEditTheaterId(e.target.value)}
-                      placeholder={getName(play.theaterId)}
-                    >
-                    </input>
-                  ) : (
-                    <div
-                      name='edit-id'
-                      style={{marginLeft:'20px', marginTop:'5px'}}
-                    >
-                      <span>
-                        {getName(play.theaterId)}
-                      </span>
-                    </div>
-                  )}
+        <div>
+          <div className='editable-title'>Plays:</div>
+          <div className='editable'>
+            {events?.map((play, key) => {
+              return (
+                <div key={key} className='play-details'>
+                  <div onClick={() => selectPlay(play, columns)} style={{cursor: 'pointer'}}>
+                    <label htmlFor="edit-id">Theater :</label>
+                    {isEditing === play.id ? (
+                      <input
+                        name='edit-id'
+                        onChange={e => setEditTheaterId(e.target.value)}
+                        placeholder={getName(play.theaterId)}
+                      >
+                      </input>
+                    ) : (
+                      <div
+                        name='edit-id'
+                        style={{marginLeft:'20px', marginTop:'5px'}}
+                      >
+                        <span>
+                          {getName(play.theaterId)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div onClick={() => selectPlay(play, columns)} style={{cursor: 'pointer'}}>
+                    <label htmlFor="edit-name">Play name:</label>
+                    {isEditing === play.id ? (
+                      <input
+                        name='edit-name'
+                        onChange={e => setEditName(e.target.value)}
+                        placeholder={play.name}
+                      >
+                      </input>
+                    ) : (
+                      <div
+                        name='edit-name'
+                        style={{marginTop:'5px'}}
+                        onClick={() => selectPlay(play, columns)} style={{cursor: 'pointer'}}
+                      >
+                        <span>
+                          {play.name}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div onClick={() => selectPlay(play, columns)} style={{cursor: 'pointer'}}>
+                    <label htmlFor="edit-start">Starting hour:</label>
+                    {isEditing === play.id ? (
+                      <input
+                        name='edit-start'
+                        onChange={e => setEditStart(e.target.value)}
+                        placeholder={play.start.slice(11,19)}
+                      >
+                      </input>
+                    ) : (
+                      <div
+                        style={{marginTop:'5px'}}
+                        name='edit-start'
+                        onClick={() => selectPlay(play, columns)} style={{cursor: 'pointer'}}
+                      >
+                        <span>
+                          {play.start.slice(11,19)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div onClick={() => selectPlay(play, columns)} style={{cursor: 'pointer'}}>
+                    <label htmlFor="edit-end">Ending hour:</label>
+                    {isEditing === play.id ? (
+                      <input
+                        name='edit-end'
+                        onChange={e => setEditEnd(e.target.value)}
+                        placeholder={play.end.slice(11,19)}
+                      >
+                      </input>
+                    ) : (
+                      <div
+                        style={{marginTop:'5px'}}
+                        name='edit-end'
+                        onClick={() => selectPlay(play, columns)} style={{cursor: 'pointer'}}
+                      >
+                        <span>
+                          {play.end.slice(11,19)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div onClick={() => selectPlay(play, columns)} style={{cursor: 'pointer'}}>
+                    <label htmlFor="edit-date">Date:</label>
+                    {isEditing === play.id ? (
+                      <input
+                        name='edit-date'
+                        onChange={e => setEditDate(e.target.value)}
+                        placeholder={play.start.slice(0,10)}
+                      >
+                      </input>
+                    ) : (
+                      <div
+                        style={{marginTop:'5px'}}
+                        name='edit-date'
+                        onClick={() => selectPlay(play, columns)} style={{cursor: 'pointer'}}
+                      >
+                        <span>
+                          {play.start.slice(0,10)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  { isEditing === play.id ?
+                    <button className='abort-changes' onClick={() => setIsEditing(0)}>Abort changes</button> : 
+                    <div style={{display:'none'}}></div>
+                  }
+                  {isEditing === play.id ?
+                    <button className='edit-button' onClick={() => editHandler()}> Save changes</button> :
+                    <button className='edit-button' onClick={() => startEditing(play)}> Edit play</button>
+                  }
+                  <button className='delete-button' onClick={() => deletePlay(play)}>Delete</button>
                 </div>
-                <div>
-                  <label htmlFor="edit-name">Play name:</label>
-                  {isEditing === play.id ? (
-                    <input
-                      name='edit-name'
-                      onChange={e => setEditName(e.target.value)}
-                      placeholder={play.name}
-                    >
-                    </input>
-                  ) : (
-                    <div
-                      name='edit-name'
-                      style={{marginTop:'5px'}}
-                    >
-                      <span>
-                        {play.name}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <label htmlFor="edit-start">Starting hour:</label>
-                  {isEditing === play.id ? (
-                    <input
-                      name='edit-start'
-                      onChange={e => setEditStart(e.target.value)}
-                      placeholder={play.start.slice(11,19)}
-                    >
-                    </input>
-                  ) : (
-                    <div
-                      style={{marginTop:'5px'}}
-                      name='edit-start'
-                    >
-                      <span>
-                        {play.start.slice(11,19)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <label htmlFor="edit-end">Ending hour:</label>
-                  {isEditing === play.id ? (
-                    <input
-                      name='edit-end'
-                      onChange={e => setEditEnd(e.target.value)}
-                      placeholder={play.end.slice(11,19)}
-                    >
-                    </input>
-                  ) : (
-                    <div
-                      style={{marginTop:'5px'}}
-                      name='edit-end'
-                    >
-                      <span>
-                        {play.end.slice(11,19)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <label htmlFor="edit-date">Date:</label>
-                  {isEditing === play.id ? (
-                    <input
-                      name='edit-date'
-                      onChange={e => setEditDate(e.target.value)}
-                      placeholder={play.start.slice(0,10)}
-                    >
-                    </input>
-                  ) : (
-                    <div
-                      style={{marginTop:'5px'}}
-                      name='edit-date'
-                    >
-                      <span>
-                        {play.start.slice(0,10)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                { isEditing === play.id ?
-                  <button className='abort-changes' onClick={() => setIsEditing(0)}>Abort changes</button> : 
-                  <div style={{display:'none'}}></div>
-                }
-                {isEditing === play.id ?
-                  <button className='edit-button' onClick={() => editHandler()}> Save changes</button> :
-                  <button className='edit-button' onClick={() => startEditing(play)}> Edit play</button>
-                }
-                <button className='delete-button' onClick={() => deletePlay(play)}>Delete</button>
-              </div>
-            )
-          })}
-          <dir className='footer'></dir>
-        </div>
+                )
+              })}
+              <dir className='footer'></dir>
+            </div>
+          </div>
       }
     </div>
   );
@@ -357,4 +419,11 @@ const ControlPanel = ({history}) => {
 
 
 
-export default ControlPanel
+
+// const mapStateToProps = state => {
+//   return {
+//     theater: state.theaterReducer.theater,
+//   }
+// }
+
+export default connect()(ControlPanel)

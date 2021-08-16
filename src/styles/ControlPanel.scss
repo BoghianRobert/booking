@@ -76,10 +76,7 @@
       cursor: pointer;
     }
 
-    .date-picker-control{
-      margin-left: 0.1%;
-      margin-top: 0.1%;
-    }
+    
   }
   
   .columns {
@@ -106,7 +103,7 @@
   .show-calendar {
     position: absolute;
     z-index: 2;
-    top: 55%;
+    top: 80%;
     left: 3%;
     font-size: 18px;
     color: #fff;
@@ -123,8 +120,56 @@
   .payment-history{
     position: absolute;
     z-index: 2;
-    top: 20%;
-    left: 3%;
+    top: 80%;
+    left: 63%;
+    font-size: 18px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 13px 30px;
+    outline: none;
+    background-color: #0099ff;
+    cursor: pointer;
+    width: 15%;
+  }
+
+  .log-out {
+    position: absolute;
+    z-index: 2;
+    top: 80%;
+    left: 83%;
+    font-size: 18px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 13px 30px;
+    outline: none;
+    background-color: #0099ff;
+    cursor: pointer;
+    width: 15%;
+  }
+
+  .add-theater {
+    position: absolute;
+    z-index: 2;
+    top: 80%;
+    left: 23%;
+    font-size: 18px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 13px 30px;
+    outline: none;
+    background-color: #0099ff;
+    cursor: pointer;
+    width: 15%;
+  }
+
+  .add-play {
+    position: absolute;
+    z-index: 2;
+    top: 80%;
+    left: 43%;
     font-size: 18px;
     color: #fff;
     border: none;
@@ -185,6 +230,16 @@
       }
     }
   }
+.editable-title {
+  position: absolute;
+  top: 34%;
+  left: 45%;
+  border-radius: 5px;
+  color: white;
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+}
 
 .editable {
   position: absolute;
@@ -252,4 +307,15 @@
   .footer {
     height: 50px;
   }
+}
+
+.date-picker-control{
+  margin-left: 0.1%;
+  margin-top: 0.1%;
+  margin-bottom: 20%;
+}
+
+.theater-picker {
+  margin-bottom: 5%;
+  margin-top: 5%;
 }

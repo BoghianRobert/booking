@@ -13,12 +13,14 @@ import { url } from '../env'
 
 const PlayRoom = ({play, theater, history}) => {
     const [seats, setSeats] = useState([])
+    const [location, setLocation] = useState({})
     const [tickets, setTickets] = useState([])
     const [takenTickets, setTakenTickets] = useState([])
     const [selectedSeats, setSelectedSeats] = useState([])
     const [showOrder, setShowOrder] = useState(false)
     const [customerData, setCustomerData] = useState({})
     const [presentPlay, setPresentPlay] = useState({})
+    const [admin, setAdmin] = useState('')
 
     useEffect(() => {
         const getTickets = () => {
@@ -38,9 +40,15 @@ const PlayRoom = ({play, theater, history}) => {
         let numberOfSeats = JSON.parse(localStorage.getItem('totalSeats'));
         let currentPlay = JSON.parse(localStorage.getItem('play'));
         setSeats(getSeats(numberOfSeats))
+        setLocation(numberOfSeats)
         setTakenTickets(findSeat(currentPlay,tickets))
         setPresentPlay(currentPlay)
     }, [theater, play, tickets]) 
+
+    useEffect(() => {
+        let localAdmin = JSON.parse(localStorage.getItem('admin'))
+        setAdmin(localAdmin)
+    })
 
 
 
@@ -58,7 +66,11 @@ const PlayRoom = ({play, theater, history}) => {
     const completeOrder = async (selectedSeats) =>  {
         let ticketIds = getTicketId(tickets, selectedSeats, presentPlay)
         let currentDate = buildDate()
-        if (customerData.phoneNumber.length !== 9){
+        if (!customerData.fullName) {
+            alert('Enter a name!')
+            return 0
+        }
+        else if (customerData.phoneNumber?.length !== 9){
             alert('Phone number has to have 9 digits')
             return 0
         } else if (!customerData.email.includes('@') || !customerData.email.includes('.')){
@@ -80,6 +92,8 @@ const PlayRoom = ({play, theater, history}) => {
 
     return (
         <div>
+            <div className='theater-name' >{location.name}</div>
+            <div className='theater-address' >{location.address}</div>
             <div className='screen'>STAGE</div>
             <div className='seat-wrap'>
                 
@@ -93,9 +107,15 @@ const PlayRoom = ({play, theater, history}) => {
                     )
                 })}
             </div> 
-            {selectedSeats.length > 0 &&
+            {selectedSeats?.length > 0 &&
                 <button className='start-order' onClick={() => setShowOrder(true)}>Place Order</button>
             }
+
+            {admin === null ?
+                <button className='button-to-home' onClick={() => history.push('/')}>Home</button> :
+                <button className='button-to-home' onClick={() => history.push('/control-panel')}>Go to Panel</button>
+            }
+
             { showOrder && 
                 <div className="customer-form">
                     <form className='form-container'>
