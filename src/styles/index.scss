@@ -35,6 +35,20 @@ html {
       width: 10%;
       cursor: pointer;
     }
+    .go-to-admin-button {
+      position: absolute;
+      top: 10%;
+      left: 14%;
+      font-size: 18px;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      background-color: #0099ff;
+      height: 50px;
+      width: 10%;
+      cursor: pointer;
+    }
   
     h1 {
       text-align: center;
@@ -173,3 +187,14 @@ html {
       }
     
   }
+.title-main {
+  position: absolute;
+  top: 11%;
+  left: 40%;
+  border-radius: 5px;
+  color: white;
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  z-index: 2;
+}

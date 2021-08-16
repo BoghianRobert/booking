@@ -33,24 +33,13 @@ const PaymentHistory = ({history}) => {
                     return (
                         <div key={key} className='payment-table'>
                             <div>
-                                <label htmlFor="payment-id">Customer Id:</label>
+                                <label htmlFor="payment-id">Customer Name:</label>
                                 <div
                                 style={{marginTop:'5px'}}
                                 name='payment-id'
                                 >
                                     <span>
-                                        {payment.customerId}
-                                    </span>
-                                </div>
-                            </div>
-                            <div>
-                                <label htmlFor="ticket-number">Ticket Id:</label>
-                                <div
-                                style={{marginTop:'5px'}}
-                                name='ticket-number'
-                                >
-                                    <span>
-                                        {payment.ticketId}
+                                        {payment.customerName}
                                     </span>
                                 </div>
                             </div>

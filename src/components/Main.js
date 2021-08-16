@@ -95,6 +95,7 @@ const Main = ({dispatch, theater, history}) => {
           <button className='main-page-view-button' onClick={() => setCalendarView(!calendarView)}>Calendar View</button>:
           <button className='main-page-view-button' onClick={() => setCalendarView(!calendarView)}>List View</button>
         }
+          <button className='go-to-admin-button' onClick={() => history.push('/admin')}>Go To Admin</button>
       </header>
       { calendarView &&
         <div className="wrapper">
@@ -134,71 +135,75 @@ const Main = ({dispatch, theater, history}) => {
 
      {
         !calendarView && 
-        <div className='list-view'>
-          {events?.map((play, key) => {
-            return (
-              <div key={key} className='play-details-list' style={ play.start.substring(0,10) === formatDate(startDate) ? {} : {display:'none'}}>
-                <div>
-                  <label htmlFor="theater-list-view">Theater:</label>
-                  <div
-                    name='theater-list-view'
-                    style={{marginLeft:'20px', marginTop:'5px'}}
-                  >
-                    <span>
-                      {getName(play.theaterId)}
-                    </span>
+        <div>
+          <div className='title-main'>Plays available on {formatDate(startDate)}:</div>
+          <div className='list-view'>
+
+            {events?.map((play, key) => {
+              return (
+                <div key={key} className='play-details-list' style={ play.start.substring(0,10) === formatDate(startDate) ? {} : {display:'none'}}>
+                  <div>
+                    <label htmlFor="theater-list-view">Theater:</label>
+                    <div
+                      name='theater-list-view'
+                      style={{marginLeft:'20px', marginTop:'5px'}}
+                    >
+                      <span>
+                        {getName(play.theaterId)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  
-                  <div
-                    name='name-list-view'
-                    style={{marginTop:'5px'}}
-                  >
-                    <span>
-                      {play.name}
-                    </span>
+                  <div>
+                    
+                    <div
+                      name='name-list-view'
+                      style={{marginTop:'5px'}}
+                    >
+                      <span>
+                        {play.name}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label htmlFor="name-list-view">Starting hour:</label>
-                  
-                  <div
-                    style={{marginTop:'5px'}}
-                    name='edit-start'
-                  >
-                    <span>
-                      {play.start.slice(11,19)}
-                    </span>
+                  <div>
+                    <label htmlFor="name-list-view">Starting hour:</label>
+                    
+                    <div
+                      style={{marginTop:'5px'}}
+                      name='edit-start'
+                    >
+                      <span>
+                        {play.start.slice(11,19)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label htmlFor="end-list-view">Ending hour:</label>
-                  <div
-                    style={{marginTop:'5px'}}
-                    name='end-list-view'
-                  >
-                    <span>
-                      {play.end.slice(11,19)}
-                    </span>
+                  <div>
+                    <label htmlFor="end-list-view">Ending hour:</label>
+                    <div
+                      style={{marginTop:'5px'}}
+                      name='end-list-view'
+                    >
+                      <span>
+                        {play.end.slice(11,19)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label htmlFor="date-list-view">Date:</label>
-                  <div
-                    style={{marginTop:'5px'}}
-                    name='date-list-view'
-                  >
-                    <span>
-                      {play.start.slice(0,10)}
-                    </span>
+                  <div>
+                    <label htmlFor="date-list-view">Date:</label>
+                    <div
+                      style={{marginTop:'5px'}}
+                      name='date-list-view'
+                    >
+                      <span>
+                        {play.start.slice(0,10)}
+                      </span>
+                    </div>
                   </div>
+                  <button className='choose-button' onClick={() => selectPlay(play, columns)}>Choose</button>
                 </div>
-                <button className='choose-button' onClick={() => selectPlay(play, columns)}>Choose</button>
-              </div>
-            )
-          })}
-          <dir className='footer'></dir>
+              )
+            })}
+            <dir className='footer'></dir>
+          </div>
         </div>
       }
     </div>
