@@ -159,12 +159,15 @@ const ControlPanel = ({dispatch, history}) => {
           alert(err)
       })
     setIsEditing(0)
+    window.location.href = ('/control-panel')
   }
 
   const deletePlay = (play) => {
+    console.log(play.start.slice(0,10))
+    console.log(formatDate(startDate))
     let id = play.id
     for (let i in tickets) {
-      if(tickets[i].playId === id && tickets[i].customerId !== null && play.start.slice(0,10) > formatDate(startDate)){
+      if(tickets[i].playId === id && tickets[i].paymentId !== null && play.start.slice(0,10) > formatDate(startDate)){
         alert('You cannnot delete plays with sold tickets!')
         return 0
       }
