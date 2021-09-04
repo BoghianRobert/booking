@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { betterColors, getCurrentTime, getTimeAxe, getVanueAxe } from '../utils/index.js';
 import { formatDate } from '../utils/formatDate.js';
+import { findSeat } from '../utils/findSeat'
 import DatePicker from 'react-datepicker';
 import { HoursColumn } from './HoursColumn.js';
 import Axios from 'axios';
@@ -20,6 +21,9 @@ const Main = ({dispatch, theater, history}) => {
   const [columns, setColumns] = useState([])
   const [startDate, setStartDate] = useState(new Date());
   const [calendarView, setCalendarView] = useState(false);
+  const [tickets, setTickets] = useState([])
+  const [currentTheater, setCurrentTheater] = useState([])
+  const [showButton, setShowButton] = useState(true)
 
   useEffect(() => {
     const getPlays = () => {
@@ -56,6 +60,20 @@ const Main = ({dispatch, theater, history}) => {
     getTheater();
   }, []) 
 
+  useEffect(() => {
+    const getTickets = () => {
+      Axios.get(url.ticket)
+      .then((res) => {
+          setTickets(res.data)
+      })
+      .catch((err) => {
+          alert(err)
+          console.log(err)
+      })  
+    }
+    getTickets();
+  }, [])
+
 
   const selectPlay = (event, columns) => {
     for(let i in columns){
@@ -67,6 +85,15 @@ const Main = ({dispatch, theater, history}) => {
     }
     dispatch(updatePlay(event))
     history.push('/play')
+  }
+
+  const showSeats = (event, columns) => {
+    for(let i in columns){
+      if(columns[i].id === event.theaterId){
+        setCurrentTheater(columns[i])
+        setShowButton(false)
+      }
+    }
   }
 
   const getName = (id) => {
@@ -198,6 +225,20 @@ const Main = ({dispatch, theater, history}) => {
                       </span>
                     </div>
                   </div>
+                  {showButton && <button className='choose-button' onClick={() => showSeats(play, columns)}>Show Seats</button>}
+                  {!showButton && <div>
+                    <label htmlFor="name-list-view">Taken seats:</label>
+                    
+                    <div
+                      style={{marginTop:'5px'}}
+                      name='edit-start'
+                    >
+                      <span>
+                        {findSeat(play,tickets).length}/{currentTheater.numberOfSeats}
+                      </span>
+                    </div>
+                  </div>
+                  }
                   <button className='choose-button' onClick={() => selectPlay(play, columns)}>Choose</button>
                 </div>
               )
