@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { betterColors, getCurrentTime, getTimeAxe, getVanueAxe } from '../utils/index.js';
 import { formatDate } from '../utils/formatDate.js';
+import { findSeat } from '../utils/findSeat'
 import { buildDateNewPlay } from '../utils/buildDateNewPlay';
 import DatePicker from 'react-datepicker';
 import { HoursColumn } from './HoursColumn.js';
@@ -34,6 +35,9 @@ const ControlPanel = ({dispatch, history}) => {
   const [theaterForm, setTheaterForm] = useState(false)
   const [newTheater, setNewTheater] = useState({})
   const [playForm, setPlayForm] = useState(false)
+  const [showButton, setShowButton] = useState(true)
+  const [currentTheater, setCurrentTheater] = useState([])
+  const [allowtDate, setAllowDate] = useState(new Date());
 
   useEffect(() => {
     const getPlays = () => {
@@ -83,17 +87,28 @@ const ControlPanel = ({dispatch, history}) => {
     getTicket();
   }, []) 
 
+  const showSeats = (event, columns) => {
+    for(let i in columns){
+      if(columns[i].id === event.theaterId){
+        setCurrentTheater(columns[i])
+        setShowButton(false)
+      }
+    }
+  }
+
   const postNewPlay = () => {
     let start = buildDateNewPlay(startDate, startTime)
     let end = buildDateNewPlay(startDate, endTime)
     Axios.post(url.play, {theaterId:theaterId ,name: playName, start, end})
     .then((res) => {
         console.log(res.data)
+        window.location.href = '/control-panel'
     })
     .catch((err) => {
         console.log(err)
         alert(err)
     })
+    
   }
 
   const selectPlay = (event, columns) => {
@@ -148,16 +163,17 @@ const ControlPanel = ({dispatch, history}) => {
 
   const deletePlay = (play) => {
     let id = play.id
-    // for (let i in tickets) {
-    //   if(tickets[i].playId === id && tickets[i].customerId !== null && play.start.slice(0,10) > formatDate(startDate)){
-    //     alert('You cannnot delete plays with sold tickets!')
-    //     return 0
-    //   }
-    // }
-    Axios.delete(url.play, {id})
+    for (let i in tickets) {
+      if(tickets[i].playId === id && tickets[i].customerId !== null && play.start.slice(0,10) > formatDate(startDate)){
+        alert('You cannnot delete plays with sold tickets!')
+        return 0
+      }
+    }
+    Axios.delete(url.play, {data: {id}})
     .then((res) => {
         console.log(res.data)
         alert("Play deleted successfully")
+        window.location.href = '/control-panel'
     })
     .catch((err) => {
         console.log(err)
@@ -240,7 +256,7 @@ const ControlPanel = ({dispatch, history}) => {
             </div>
             <div className='date-picker-control'>
                 <label htmlFor="date">Enter date:</label>
-                <DatePicker name='date' dateFormat="yyyy/MM/dd" selected={startDate} onChange={date => setStartDate(date)} /> 
+                <DatePicker startDate={allowtDate} minDate={allowtDate} name='date' dateFormat="yyyy/MM/dd" selected={startDate} onChange={date => setStartDate(date)} /> 
             </div>
 
             <div className='place-order' onClick={() => postNewPlay()}>Create Play</div>
@@ -397,6 +413,23 @@ const ControlPanel = ({dispatch, history}) => {
                       </div>
                     )}
                   </div>
+                  {showButton && <button className='edit-button' onClick={() => showSeats(play, columns)}>Show Seats</button>}
+                  {
+                    !showButton &&
+                      <div onClick={() => selectPlay(play, columns)} style={{cursor: 'pointer'}}>
+                      <label htmlFor="edit-date">Taken seats:</label>
+                      <div
+                        style={{marginTop:'5px'}}
+                        name='edit-date'
+                        onClick={() => selectPlay(play, columns)} style={{cursor: 'pointer'}}
+                      >
+                        <span>
+                          {findSeat(play,tickets).length}/{currentTheater.numberOfSeats}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                  
                   { isEditing === play.id ?
                     <button className='abort-changes' onClick={() => setIsEditing(0)}>Abort changes</button> : 
                     <div style={{display:'none'}}></div>
